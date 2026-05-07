@@ -1,0 +1,28 @@
+:root {
+  --sky: #D6ECFF;
+  --sky-mid: #C2E0FF;
+  --sky-deep: #A8D4FF;
+  --ice: #EEF7FF;
+  --white: #FAFCFF;
+  --mist: #F0F7FF;
+  --periwinkle: #7BAED4;
+  --steel: #5A8CB5;
+  --ink: #1A2B3C;
+  --body-color: #3D5269;
+  --muted: #7A96AE;
+  --faint: #B8CDD9;
+  --border: rgba(100,160,210,0.18);
+  --border-md: rgba(100,160,210,0.32);
+  --card-shadow: 0 2px 20px rgba(90,140,181,0.08);
+  --hover-shadow: 0 8px 40px rgba(90,140,181,0.16);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--white);
+  font-family: 'sans-serif', sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+}

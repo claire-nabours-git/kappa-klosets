@@ -1,0 +1,21 @@
+.band { display: none; }
+.kicker {
+  font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: 14px;
+}
+.title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 300;
+  color: #fff; line-height: 1.05; letter-spacing: -.01em; margin-bottom: 14px;
+}
+.title em { font-style: italic; color: rgba(255,255,255,0.75); }
+.sub { font-size: .9rem; color: rgba(255,255,255,0.65); line-height: 1.7; font-weight: 300; max-width: 360px; }
+.right { display: flex; gap: 2.5rem; padding-bottom: 4px; }
+.num { text-align: right; }
+.numVal {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 2.6rem; font-weight: 300; color: #fff; line-height: 1; display: block;
+}
+.numLbl { font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,0.55); font-weight: 300; }
+
+@media(max-width:640px) { .hero { padding: 2.5rem 1.5rem 2rem; } .right { gap: 1.5rem; } }

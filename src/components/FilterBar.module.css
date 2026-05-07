@@ -1,0 +1,37 @@
+.panel {
+  border-bottom: 1px solid var(--border);
+  background: rgba(250,252,255,0.98);
+  animation: slideDown .2s ease;
+}
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.inner {
+  max-width: 1200px; margin: 0 auto;
+  padding: 1.2rem 2.5rem 1.4rem;
+}
+.section { margin-bottom: 1rem; }
+.section:last-of-type { margin-bottom: 0; }
+.sectionLabel {
+  font-size: .62rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--faint); font-weight: 500; margin-bottom: 8px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 5px 14px;
+  border: 1px solid var(--border); border-radius: 20px;
+  background: var(--mist);
+  font-family: 'Geom', sans-serif;
+  font-size: .76rem; font-weight: 300; letter-spacing: .04em;
+  color: var(--muted); cursor: pointer;
+  transition: all .15s;
+}
+.chip:hover { border-color: var(--periwinkle); color: var(--ink); }
+.chipOn { background: var(--ink) !important; color: var(--sky) !important; border-color: var(--ink) !important; }
+.footer { margin-top: 1rem; display: flex; justify-content: flex-end; }
+.clear {
+  background: none; border: none;
+  font-family: 'Geom', sans-serif; font-size: .75rem;
+  color: var(--muted); cursor: pointer;
+  letter-spacing: .06em; text-decoration: underline; text-underline-offset: 3px;
+  transition: color .15s;
+}
+.clear:hover { color: var(--ink); }

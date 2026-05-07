@@ -1,0 +1,107 @@
+.bar {
+  border-bottom: 1px solid var(--border);
+  background: rgba(250,252,255,0.95);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 76px; z-index: 40;
+  padding: 0 2.5rem;
+}
+.inner {
+  max-width: 1400px; margin: 0 auto;
+  height: 54px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sorts { display: flex; gap: 6px; align-items: center; }
+.rightBtns { display: flex; gap: 6px; align-items: center; }
+
+.sortBtn {
+  padding: 7px 16px;
+  border: 1px solid var(--border); border-radius: 20px;
+  background: none;
+  font-family: 'Geom', sans-serif;
+  font-size: .78rem; font-weight: 400; letter-spacing: .06em;
+  color: var(--muted); cursor: pointer;
+  transition: all .15s;
+  display: flex; align-items: center; gap: 5px;
+}
+.sortBtn:hover { border-color: var(--periwinkle); color: var(--ink); }
+.on { background: var(--ink) !important; color: var(--sky) !important; border-color: var(--ink) !important; }
+
+/* Dropdown wrapper */
+.ddWrap { position: relative; }
+
+.chevronBtn { font-size: .55rem; opacity: .5; }
+.xBtn { font-size: .6rem; opacity: .65; margin-left: 1px; transition: opacity .15s; }
+.xBtn:hover { opacity: 1; }
+
+/* Shared dropdown */
+.dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0;
+  min-width: 200px;
+  background: var(--white);
+  border: 1px solid var(--border-md);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(90,140,181,0.14);
+  overflow: hidden;
+  z-index: 100;
+  animation: dropIn .18s ease;
+}
+@keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+/* Category items */
+.ddTopItem {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border: none; background: none; cursor: pointer;
+  font-family: 'Geom', sans-serif; font-size: .82rem; font-weight: 500;
+  color: var(--ink); letter-spacing: .04em; text-align: left;
+  transition: background .12s; border-top: 1px solid var(--border);
+}
+.ddTopItem:first-child { border-top: none; }
+.ddTopItem:hover { background: var(--mist); }
+.ddTopOn { color: #1d2545 !important; background: var(--sky) !important; }
+
+.ddChevron { font-size: .78rem; color: var(--faint); transition: transform .18s; flex-shrink: 0; }
+.ddChevronOpen { transform: rotate(90deg); }
+
+.ddSubItem {
+  width: 100%; display: block;
+  padding: 8px 14px 8px 26px; border: none; background: #f8fafc;
+  cursor: pointer; text-align: left;
+  font-family: 'Geom', sans-serif; font-size: .77rem; font-weight: 300;
+  color: var(--muted); letter-spacing: .03em;
+  border-top: 1px solid var(--border); transition: all .12s;
+}
+.ddSubItem:hover { background: var(--sky); color: var(--ink); }
+.ddSubOn { background: #1d2545 !important; color: #fff !important; font-weight: 500 !important; }
+
+/* Filter sections */
+.filterSection { padding: 12px 14px; border-top: 1px solid var(--border); }
+.filterSection:first-child { border-top: none; }
+.filterSectionLabel {
+  font-size: .62rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--faint); font-weight: 500; margin-bottom: 8px;
+  font-family: 'Geom', sans-serif;
+}
+.filterChips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip {
+  padding: 4px 11px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--mist);
+  font-family: 'Geom', sans-serif; font-size: .72rem; font-weight: 300;
+  color: var(--muted); cursor: pointer; transition: all .12s; letter-spacing: .03em;
+}
+.chip:hover { border-color: var(--periwinkle); color: var(--ink); }
+.chipOn { background: #1d2545 !important; color: #fff !important; border-color: #1d2545 !important; }
+
+.clearAll {
+  width: 100%; padding: 9px 14px; border: none; border-top: 1px solid var(--border);
+  background: none; cursor: pointer;
+  font-family: 'Geom', sans-serif; font-size: .72rem; color: var(--faint);
+  letter-spacing: .06em; text-align: center;
+  transition: color .15s; text-decoration: underline; text-underline-offset: 3px;
+}
+.clearAll:hover { color: var(--ink); }
+
+.badge {
+  background: var(--white); color: #1d2545;
+  border-radius: 20px; padding: 1px 6px;
+  font-size: .62rem; font-weight: 600;
+}

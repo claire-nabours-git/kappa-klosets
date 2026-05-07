@@ -1,0 +1,117 @@
+.page { min-height: 60vh; }
+
+.topBar {
+  border-bottom: 1px solid var(--border);
+  background: rgba(250,252,255,0.97);
+  position: sticky; top: 64px; z-index: 40;
+  padding: 0 2.5rem;
+}
+.topInner { max-width: 1400px; margin: 0 auto; padding: 1.2rem 0 0; }
+.pageTitle {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.3rem; font-weight: 400; color: var(--ink);
+  margin-bottom: 1rem;
+}
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-bottom: 0; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 10px 18px; border: none; background: none; cursor: pointer;
+  font-family: 'Geom', sans-serif; font-size: .78rem; font-weight: 400;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--faint);
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s; white-space: nowrap;
+}
+.tab:hover { color: var(--body-color); }
+.tabOn { color: var(--ink) !important; border-bottom-color: var(--ink) !important; }
+
+.content { max-width: 1400px; margin: 0 auto; padding: 2rem 2.5rem 4rem; }
+
+.sectionHead {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: .85rem; font-weight: 400; color: var(--ink);
+  letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 1rem; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.empty { font-size: .85rem; color: var(--faint); padding: 2rem 0; font-weight: 300; }
+
+.itemList { display: flex; flex-direction: column; gap: 12px; }
+
+/* Item card (My Listings, Liked, Sold) */
+.itemCard {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 14px;
+  transition: border-color .15s;
+}
+.itemCard:hover { border-color: var(--sky-deep); }
+
+.thumb {
+  width: 80px; height: 80px; flex-shrink: 0;
+  border-radius: 12px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.thumbImg { width: 100%; height: 100%; object-fit: cover; }
+.thumbEmoji { font-size: 1.8rem; }
+.badge {
+  position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,31,91,0.85); color: #fff;
+  font-size: .55rem; letter-spacing: .1em; font-weight: 600;
+  padding: 2px 6px; border-radius: 6px; white-space: nowrap;
+  font-family: 'Geom', sans-serif;
+}
+
+.itemInfo { flex: 1; min-width: 0; }
+.itemTitle { font-weight: 500; font-size: .92rem; color: var(--ink); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.itemMeta { font-size: .74rem; color: var(--faint); margin-bottom: 4px; font-weight: 300; letter-spacing: .04em; }
+.itemPrice { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.1rem; font-weight: 400; color: var(--ink); }
+
+.itemActions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.actBtn {
+  padding: 5px 14px; border-radius: 20px;
+  border: 1px solid var(--border);
+  background: none; font-family: 'Geom', sans-serif;
+  font-size: .72rem; font-weight: 400; letter-spacing: .06em;
+  color: var(--muted); cursor: pointer; transition: all .15s;
+}
+.actBtn:hover { border-color: var(--ink); color: var(--ink); }
+.actDanger:hover { border-color: #c08080 !important; color: #a06060 !important; }
+.actGhost { color: var(--faint); }
+.actGhost:hover { border-color: var(--periwinkle) !important; color: var(--periwinkle) !important; }
+
+/* Offer card */
+.offerCard {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 14px;
+  transition: border-color .15s;
+}
+.offerCard:hover { border-color: var(--sky-deep); }
+.offerThumb {
+  width: 70px; height: 70px; flex-shrink: 0;
+  border-radius: 10px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.offerInfo { flex: 1; min-width: 0; }
+.offerPrices { display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px; }
+.offerAmount { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.1rem; font-weight: 400; color: var(--ink); }
+.offerAsking { font-size: .72rem; color: var(--faint); font-weight: 300; }
+.offerMsg { font-size: .78rem; color: var(--body-color); font-style: italic; margin: 4px 0; font-weight: 300; }
+.offerBottom { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+
+.statusBadge {
+  font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+  font-weight: 600; padding: 3px 10px; border-radius: 20px;
+  font-family: 'Geom', sans-serif;
+}
+.statusPending  { background: #FFF8E0; color: #9A7A20; }
+.statusAccepted { background: #E0F0E8; color: #2A7A50; }
+.statusDeclined { background: #F8EDED; color: #9A4040; }
+.statusComplete { background: #E0F0E8; color: #2A7A50; font-weight: 700; }
+
+@media(max-width:640px) {
+  .topBar { padding: 0 1.5rem; }
+  .content { padding: 1.5rem 1.5rem 4rem; }
+}

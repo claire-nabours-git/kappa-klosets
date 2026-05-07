@@ -1,0 +1,65 @@
+.page { min-height: 100vh; display: flex; flex-direction: column; }
+
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem 5rem;
+  width: 100%;
+}
+
+.gridHead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 1.4rem;
+}
+
+.gridTitle {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+.gridCount {
+  font-size: 0.72rem;
+  color: var(--faint);
+  letter-spacing: 0.08em;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 1.6rem 2.5rem;
+  margin-top: auto;
+}
+
+.footerInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footWord {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-weight: 300;
+  font-size: 0.9rem;
+  color: var(--faint);
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+}
+
+.footWord em { color: var(--periwinkle); font-style: italic; }
+
+.footCopy {
+  font-size: 0.7rem;
+  color: var(--faint);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 640px) {
+  .main { padding: 0 1.5rem 4rem; }
+}
