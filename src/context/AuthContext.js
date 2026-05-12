@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -81,7 +82,11 @@ export function AuthProvider({ children }) {
     return unsub;
   }, []);
 
-  const value = { currentUser, userProfile, register, login, logout, updateProfile, toggleLike };
+  async function resetPassword(email) {
+    return sendPasswordResetEmail(auth, email);
+  }
+
+  const value = { currentUser, userProfile, register, login, logout, updateProfile, toggleLike, resetPassword };
 
   return (
     <AuthContext.Provider value={value}>

@@ -5,6 +5,7 @@ import {
   serverTimestamp, doc, onSnapshot as docSnapshot,
 } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
+import { sendDm } from '../utils/sendDm';
 import styles from './ListingDetail.module.css';
 
 const CATEGORY_BG = { formal: '#D6ECFF', formals: '#D6ECFF', recruitment: '#FFE8F0', raids: '#E0F2FF', festival: '#FFF0D6', party: '#F0E8FF', dresses: '#F8E4FF', tops: '#E4F0FF', bottoms: '#E8F4E8', shoes: '#FFF4E0', accessories: '#E4F3FF', sets: '#F4E4FF', furniture: '#D8EEF8', subleasing: '#EAF4FF', sublease: '#EAF4FF', tickets: '#E8FFE8', other: '#F0F0F0' };
@@ -94,6 +95,7 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
   async function sendOffer(amount, message) {
     if (!currentUser || !amount) return;
     setOfferSending(true);
+    const buyerName = `${userProfile?.first || ''} ${userProfile?.last?.[0] || ''}.`.trim();
     await addDoc(collection(db, 'offers'), {
       listingId:       listing.id,
       listingTitle:    listing.title,
@@ -101,7 +103,7 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
       listingImageUrl: photos[0] || null,
       listingCategory: listing.category || '',
       buyerUid:        currentUser.uid,
-      buyerName:       `${userProfile?.first || ''} ${userProfile?.last?.[0] || ''}.`.trim(),
+      buyerName,
       buyerInitials:   (userProfile?.first?.[0] || '') + (userProfile?.last?.[0] || ''),
       sellerUid:       listing.sellerUid || '',
       sellerName:      listing.sellerName || '',
@@ -110,6 +112,21 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
       status:          'pending',
       createdAt:       serverTimestamp(),
     });
+
+    if (listing.sellerUid) {
+      const dmText = [
+        `💌 Offer: $${amount} for "${listing.title}"`,
+        message.trim() ? `"${message.trim()}"` : null,
+      ].filter(Boolean).join('\n');
+      await sendDm({
+        fromUid: currentUser.uid,
+        fromName: buyerName,
+        toUid: listing.sellerUid,
+        toName: listing.sellerName || 'Sister',
+        text: dmText,
+      });
+    }
+
     setOfferSending(false);
     setOfferSent(true);
   }

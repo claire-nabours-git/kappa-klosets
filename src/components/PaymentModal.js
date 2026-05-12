@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../context/AuthContext';
+import { sendDm } from '../utils/sendDm';
 import styles from './PaymentModal.module.css';
 
 export default function PaymentModal({ offer, onClose }) {
+  const { currentUser, userProfile } = useAuth();
   const [sellerVenmo, setSellerVenmo] = useState(null);
   const [marking, setMarking]         = useState(false);
   const [marked, setMarked]           = useState(false);
@@ -18,6 +21,18 @@ export default function PaymentModal({ offer, onClose }) {
   async function markAsPaid() {
     setMarking(true);
     await updateDoc(doc(db, 'offers', offer.id), { status: 'payment_sent' });
+
+    if (currentUser && offer.sellerUid) {
+      const buyerName = `${userProfile?.first || ''} ${userProfile?.last?.[0] || ''}.`.trim();
+      await sendDm({
+        fromUid: currentUser.uid,
+        fromName: buyerName,
+        toUid: offer.sellerUid,
+        toName: offer.sellerName || 'Sister',
+        text: `💸 Payment sent! ${buyerName} paid $${offer.amount} for "${offer.listingTitle}" via Venmo.`,
+      });
+    }
+
     setMarked(true);
     setMarking(false);
     setTimeout(onClose, 1200);

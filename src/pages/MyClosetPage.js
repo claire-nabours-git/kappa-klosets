@@ -6,6 +6,8 @@ import {
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import PaymentModal from '../components/PaymentModal';
+import MeetupModal from '../components/MeetupModal';
+import { sendDm } from '../utils/sendDm';
 import styles from './MyClosetPage.module.css';
 
 const SUBTABS = [
@@ -27,6 +29,7 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
   const [offersIn, setOffersIn]     = useState([]);
   const [offersOut, setOffersOut]   = useState([]);
   const [paymentOffer, setPaymentOffer] = useState(null);
+  const [meetupOffer, setMeetupOffer]   = useState(null);
 
   const uid = currentUser?.uid;
 
@@ -103,12 +106,24 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
   }
 
   async function markActive(listingId) {
-    await updateDoc(doc(db, 'listings', listingId), { status: 'active' });
+    const batch = writeBatch(db);
+    const snap = await getDocs(query(collection(db, 'offers'), where('listingId', '==', listingId), where('sellerUid', '==', uid)));
+    snap.docs.forEach(d => {
+      if (['pending', 'accepted', 'payment_sent', 'meetup_set'].includes(d.data().status)) {
+        batch.update(d.ref, { status: 'cancelled' });
+      }
+    });
+    batch.update(doc(db, 'listings', listingId), { status: 'active' });
+    await batch.commit();
   }
 
   async function deleteListing(listingId) {
-    if (!window.confirm('Delete this listing?')) return;
-    await deleteDoc(doc(db, 'listings', listingId));
+    if (!window.confirm('Delete this listing? Any active offers will be cancelled.')) return;
+    const batch = writeBatch(db);
+    const snap = await getDocs(query(collection(db, 'offers'), where('listingId', '==', listingId), where('sellerUid', '==', uid)));
+    snap.docs.forEach(d => batch.update(d.ref, { status: 'cancelled' }));
+    batch.delete(doc(db, 'listings', listingId));
+    await batch.commit();
   }
 
   async function acceptOffer(offer) {
@@ -116,6 +131,17 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
     batch.update(doc(db, 'offers', offer.id), { status: 'accepted' });
     if (offer.listingId) batch.update(doc(db, 'listings', offer.listingId), { status: 'sold' });
     await batch.commit();
+
+    if (offer.buyerUid) {
+      const sellerName = `${userProfile?.first || ''} ${userProfile?.last?.[0] || ''}.`.trim();
+      await sendDm({
+        fromUid: uid,
+        fromName: sellerName,
+        toUid: offer.buyerUid,
+        toName: offer.buyerName || 'Sister',
+        text: `✅ Offer accepted! "${ offer.listingTitle}" for $${offer.amount} is yours. Arrange payment with ${sellerName}.`,
+      });
+    }
   }
 
   async function declineOffer(offerId) {
@@ -126,8 +152,16 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
     await updateDoc(doc(db, 'offers', offerId), { status: 'complete' });
   }
 
-  const sold      = myListings.filter(l => l.status === 'sold');
-  const purchased = offersOut.filter(o => ['accepted','payment_sent','complete'].includes(o.status));
+  const ACTIVE_OFFER_STATUSES    = ['pending', 'accepted', 'payment_sent', 'meetup_set'];
+  const PURCHASED_OFFER_STATUSES = ['accepted', 'payment_sent', 'meetup_set', 'complete'];
+
+  const myListingIds       = new Set(myListings.map(l => l.id));
+  const sold               = myListings.filter(l => l.status === 'sold');
+  const activeOffersIn     = offersIn.filter(o => ACTIVE_OFFER_STATUSES.includes(o.status) && myListingIds.has(o.listingId));
+  const activeOffersOut    = offersOut.filter(o => ['pending', 'declined'].includes(o.status));
+  const purchased          = offersOut.filter(o => PURCHASED_OFFER_STATUSES.includes(o.status));
+  const offersActionCount  = offersIn.filter(o => o.status === 'pending' || o.status === 'payment_sent').length;
+  const purchasedActionCount = offersOut.filter(o => o.status === 'accepted').length;
 
   return (
     <div className={styles.page}>
@@ -135,15 +169,19 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
         <div className={styles.topInner}>
           <h2 className={styles.pageTitle}>My Closet</h2>
           <div className={styles.tabs}>
-            {SUBTABS.map(t => (
-              <button
-                key={t.id}
-                className={`${styles.tab} ${tab === t.id ? styles.tabOn : ''}`}
-                onClick={() => setTab(t.id)}
-              >
-                {t.label}
-              </button>
-            ))}
+            {SUBTABS.map(t => {
+              const badgeCount = t.id === 'offers' ? offersActionCount : t.id === 'purchased' ? purchasedActionCount : 0;
+              return (
+                <button
+                  key={t.id}
+                  className={`${styles.tab} ${tab === t.id ? styles.tabOn : ''}`}
+                  onClick={() => setTab(t.id)}
+                >
+                  {t.label}
+                  {badgeCount > 0 && <span className={styles.tabBadge}>{badgeCount}</span>}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -151,12 +189,18 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
       <div className={styles.content}>
         {tab === 'listings' && (
           <Section
-            items={myListings.filter(l => l.status !== 'sold')}
+            items={myListings}
             empty="You haven't posted anything yet."
             renderItem={l => (
-              <ItemCard key={l.id} listing={l}>
-                <button className={styles.actBtn} onClick={() => markSold(l.id)}>Mark Sold</button>
-                <button className={`${styles.actBtn} ${styles.actDanger}`} onClick={() => deleteListing(l.id)}>Delete</button>
+              <ItemCard key={l.id} listing={l} dimmed={l.status === 'sold'}>
+                {l.status === 'sold' ? (
+                  <button className={`${styles.actBtn} ${styles.actDanger}`} onClick={() => deleteListing(l.id)}>Delete</button>
+                ) : (
+                  <>
+                    <button className={styles.actBtn} onClick={() => markSold(l.id)}>Mark Sold</button>
+                    <button className={`${styles.actBtn} ${styles.actDanger}`} onClick={() => deleteListing(l.id)}>Delete</button>
+                  </>
+                )}
               </ItemCard>
             )}
           />
@@ -182,10 +226,11 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
         {tab === 'offers' && (
           <div>
             <div className={styles.sectionHead}>Received</div>
-            {offersIn.length === 0
-              ? <p className={styles.empty}>No offers received yet.</p>
-              : offersIn.map(o => (
-                <OfferCard key={o.id} offer={o} side="received" onViewProfile={onViewProfile}>
+            {activeOffersIn.length === 0
+              ? <p className={styles.empty}>No active offers received.</p>
+              : activeOffersIn.map(o => (
+                <OfferCard key={o.id} offer={o} side="received" onViewProfile={onViewProfile}
+                  needsAction={o.status === 'pending' || o.status === 'payment_sent'}>
                   {o.status === 'pending' && (
                     <>
                       <button className={styles.actBtn} onClick={() => acceptOffer(o)}>Accept</button>
@@ -193,15 +238,18 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
                     </>
                   )}
                   {o.status === 'payment_sent' && (
-                    <button className={styles.actBtn} onClick={() => confirmReceived(o.id)}>Confirm Received</button>
+                    <button className={styles.actBtn} onClick={() => setMeetupOffer(o)}>Set Up Exchange</button>
+                  )}
+                  {o.status === 'meetup_set' && (
+                    <button className={styles.actBtn} onClick={() => confirmReceived(o.id)}>Mark Complete</button>
                   )}
                 </OfferCard>
               ))
             }
             <div className={styles.sectionHead} style={{ marginTop: '2rem' }}>Sent</div>
-            {offersOut.length === 0
-              ? <p className={styles.empty}>You haven't sent any offers yet.</p>
-              : offersOut.map(o => <OfferCard key={o.id} offer={o} side="sent" onViewProfile={onViewProfile} />)
+            {activeOffersOut.length === 0
+              ? <p className={styles.empty}>No pending offers.</p>
+              : activeOffersOut.map(o => <OfferCard key={o.id} offer={o} side="sent" onViewProfile={onViewProfile} />)
             }
           </div>
         )}
@@ -211,9 +259,7 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
             items={sold}
             empty="No sold items yet."
             renderItem={l => (
-              <ItemCard key={l.id} listing={l} badge="SOLD">
-                <button className={styles.actBtn} onClick={() => markActive(l.id)}>Relist</button>
-              </ItemCard>
+              <ItemCard key={l.id} listing={l} badge="SOLD" />
             )}
           />
         )}
@@ -223,7 +269,8 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
             items={purchased}
             empty="No purchases yet."
             renderItem={o => (
-              <OfferCard key={o.id} offer={o} side="purchased" onViewProfile={onViewProfile}>
+              <OfferCard key={o.id} offer={o} side="purchased" onViewProfile={onViewProfile}
+                needsAction={o.status === 'accepted'}>
                 {o.status === 'accepted' && (
                   <button className={styles.actBtn} onClick={() => setPaymentOffer(o)}>Send Payment</button>
                 )}
@@ -239,6 +286,9 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
       {paymentOffer && (
         <PaymentModal offer={paymentOffer} onClose={() => setPaymentOffer(null)} />
       )}
+      {meetupOffer && (
+        <MeetupModal offer={meetupOffer} onClose={() => setMeetupOffer(null)} />
+      )}
     </div>
   );
 }
@@ -248,7 +298,7 @@ function Section({ items, empty, renderItem }) {
   return <div className={styles.itemList}>{items.map(renderItem)}</div>;
 }
 
-function ItemCard({ listing: l, badge, children }) {
+function ItemCard({ listing: l, badge, dimmed, children }) {
   const cat   = (l.category || 'other').toLowerCase();
   const emoji = CATEGORY_EMOJI[cat] || '✨';
   const bg    = CATEGORY_BG[cat]    || '#DDF0FF';
@@ -257,13 +307,13 @@ function ItemCard({ listing: l, badge, children }) {
     : (l.price || '');
 
   return (
-    <div className={styles.itemCard}>
+    <div className={`${styles.itemCard} ${dimmed ? styles.itemCardDimmed : ''}`}>
       <div className={styles.thumb} style={{ background: l.imageUrl ? '#f0f4f8' : bg }}>
         {l.imageUrl
           ? <img src={l.imageUrl} alt={l.title} className={styles.thumbImg} />
           : <span className={styles.thumbEmoji}>{emoji}</span>
         }
-        {badge && <span className={styles.badge}>{badge}</span>}
+        {(badge || dimmed) && <span className={styles.badge}>{badge || 'SOLD'}</span>}
       </div>
       <div className={styles.itemInfo}>
         <div className={styles.itemTitle}>{l.title}</div>
@@ -277,16 +327,22 @@ function ItemCard({ listing: l, badge, children }) {
   );
 }
 
-function OfferCard({ offer: o, side, onViewProfile, children }) {
+const ACTION_LABEL = {
+  pending:      'New offer — accept or decline',
+  payment_sent: 'Payment received — set up exchange location',
+  accepted:     'Accepted — send payment to claim',
+};
+
+function OfferCard({ offer: o, side, onViewProfile, needsAction, children }) {
   const cat   = (o.listingCategory || 'other').toLowerCase();
   const bg    = CATEGORY_BG[cat] || '#DDF0FF';
   const emoji = CATEGORY_EMOJI[cat] || '✨';
 
-  const STATUS_LABEL = { pending: 'Pending', accepted: 'Accepted', declined: 'Declined', payment_sent: 'Payment Sent', complete: 'Complete' };
-  const STATUS_COLOR = { pending: styles.statusPending, accepted: styles.statusAccepted, declined: styles.statusDeclined, payment_sent: styles.statusPending, complete: styles.statusComplete };
+  const STATUS_LABEL = { pending: 'Pending', accepted: 'Accepted', declined: 'Declined', payment_sent: 'Payment Sent', meetup_set: 'Exchange Set', complete: 'Complete' };
+  const STATUS_COLOR = { pending: styles.statusPending, accepted: styles.statusAccepted, declined: styles.statusDeclined, payment_sent: styles.statusPending, meetup_set: styles.statusAccepted, complete: styles.statusComplete };
 
   return (
-    <div className={styles.offerCard}>
+    <div className={`${styles.offerCard} ${needsAction ? styles.offerNeedsAction : ''}`}>
       <div className={styles.offerThumb} style={{ background: o.listingImageUrl ? '#f0f4f8' : bg }}>
         {o.listingImageUrl
           ? <img src={o.listingImageUrl} alt={o.listingTitle} className={styles.thumbImg} />
@@ -294,6 +350,9 @@ function OfferCard({ offer: o, side, onViewProfile, children }) {
         }
       </div>
       <div className={styles.offerInfo}>
+        {needsAction && ACTION_LABEL[o.status] && (
+          <div className={styles.actionPill}>{ACTION_LABEL[o.status]}</div>
+        )}
         <div className={styles.itemTitle}>{o.listingTitle}</div>
         <div className={styles.offerPrices}>
           <span className={styles.offerAmount}>${o.amount}</span>
@@ -306,6 +365,16 @@ function OfferCard({ offer: o, side, onViewProfile, children }) {
           }
         </div>
         {o.message ? <div className={styles.offerMsg}>"{o.message}"</div> : null}
+        {o.status === 'meetup_set' && o.meetupLocation && (
+          <div className={styles.meetupInfo}>
+            <span className={styles.meetupIcon}>📍</span>
+            <div>
+              <div className={styles.meetupLocation}>{o.meetupLocation}</div>
+              {o.meetupFormatted && <div className={styles.meetupTime}>{o.meetupFormatted}</div>}
+              {o.meetupNote && <div className={styles.meetupNote}>{o.meetupNote}</div>}
+            </div>
+          </div>
+        )}
         <div className={styles.offerBottom}>
           <span className={`${styles.statusBadge} ${STATUS_COLOR[o.status] || ''}`}>
             {STATUS_LABEL[o.status] || o.status}

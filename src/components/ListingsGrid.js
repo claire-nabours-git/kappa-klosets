@@ -23,19 +23,9 @@ const CATEGORY_BG = {
   other: '#F0F0F0',
 };
 
-const SAMPLE = [
-  { id: 's1', category: 'formal',      title: 'Dusty Blue Satin Gown',   size: '4',  condition: 'Like New', price: 45,  sellerName: 'Ava K.',    sellerInitials: 'AK' },
-  { id: 's2', category: 'formal',      title: 'Ice Blue Sequin Mini',     size: 'S',  condition: 'Like New', price: 55,  sellerName: 'Mia R.',    sellerInitials: 'MR' },
-  { id: 's3', category: 'raids',       title: 'Electric Blue Bodysuit',   size: 'M',  condition: 'Good',     price: 18,  sellerName: 'Sophia L.', sellerInitials: 'SL' },
-  { id: 's4', category: 'furniture',   title: 'Powder Blue Desk Chair',   size: '—',  condition: 'Like New', price: 65,  sellerName: 'Chloe T.',  sellerInitials: 'CT' },
-  { id: 's5', category: 'sublease',    title: '1BR Near Campus — Summer', size: '—',  condition: '—',        price: 750, sellerName: 'Lily P.',   sellerInitials: 'LP' },
-  { id: 's6', category: 'formal',      title: 'Silver Strappy Heels',     size: '7',  condition: 'Like New', price: 28,  sellerName: 'Emma W.',   sellerInitials: 'EW' },
-  { id: 's7', category: 'accessories', title: 'Sapphire Drop Earrings',   size: '—',  condition: 'Like New', price: 14,  sellerName: 'Nora B.',   sellerInitials: 'NB' },
-  { id: 's8', category: 'raids',       title: 'Cowboys & Aliens Set',     size: 'XS', condition: 'Good',     price: 22,  sellerName: 'Grace H.',  sellerInitials: 'GH' },
-];
 
 function applyFilters(listings, filters, sort, searchQuery) {
-  let out = [...listings];
+  let out = listings.filter(l => l.status !== 'sold');
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
     out = out.filter(l => l.title?.toLowerCase().includes(q) || (l.sellerName || '').toLowerCase().includes(q));
@@ -74,8 +64,7 @@ export default function ListingsGrid({ sort, filters, searchQuery, onViewProfile
     return onSnapshot(q, snap => setLive(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
   }, []);
 
-  const base     = live.length > 0 ? live : SAMPLE;
-  const filtered = applyFilters(base, filters, sort, searchQuery);
+  const filtered = applyFilters(live, filters, sort, searchQuery);
 
   return (
     <>

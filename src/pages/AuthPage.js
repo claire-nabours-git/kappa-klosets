@@ -3,9 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import styles from './AuthPage.module.css';
 
 export default function AuthPage() {
-  const { login, register } = useAuth();
-  const [mode, setMode] = useState('in'); // 'in' | 'up'
+  const { login, register, resetPassword } = useAuth();
+  const [mode, setMode] = useState('in'); // 'in' | 'up' | 'reset'
   const [error, setError] = useState('');
+  const [resetSent, setResetSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -17,6 +18,21 @@ export default function AuthPage() {
 
   async function handleSubmit() {
     setError('');
+
+    if (mode === 'reset') {
+      if (!form.email) return setError('Please enter your email.');
+      setLoading(true);
+      try {
+        await resetPassword(form.email);
+        setResetSent(true);
+      } catch (e) {
+        setError('Could not send reset email. Check the address and try again.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     if (!form.email || !form.password) return setError('Please fill in all fields.');
 
     setLoading(true);
@@ -57,10 +73,22 @@ export default function AuthPage() {
         <div className={styles.wordmark}>KAPPA KLOSETS</div>
         <div className={styles.tagline}>ready to buy, sell, and swap?</div>
 
-        <div className={styles.toggle}>
-          <button className={mode === 'in' ? styles.on : ''} onClick={() => setMode('in')}>Sign In</button>
-          <button className={mode === 'up' ? styles.on : ''} onClick={() => setMode('up')}>Join</button>
-        </div>
+        {mode !== 'reset' && (
+          <div className={styles.toggle}>
+            <button className={mode === 'in' ? styles.on : ''} onClick={() => { setMode('in'); setError(''); setResetSent(false); }}>Sign In</button>
+            <button className={mode === 'up' ? styles.on : ''} onClick={() => { setMode('up'); setError(''); setResetSent(false); }}>Join</button>
+          </div>
+        )}
+
+        {mode === 'reset' && (
+          <div style={{ marginBottom: '18px' }}>
+            <button onClick={() => { setMode('in'); setError(''); setResetSent(false); }} style={{ background: 'none', border: 'none', color: 'var(--periwinkle)', fontSize: '.82rem', cursor: 'pointer', padding: 0 }}>
+              ← Back to Sign In
+            </button>
+            <div style={{ marginTop: '10px', fontSize: '1rem', fontWeight: 600, color: 'var(--ink)' }}>Reset your password</div>
+            <div style={{ fontSize: '.82rem', color: 'var(--muted)', marginTop: '4px' }}>Enter your email and we'll send you a reset link.</div>
+          </div>
+        )}
 
         {mode === 'up' && (
           <div className={styles.f2}>
@@ -70,7 +98,16 @@ export default function AuthPage() {
         )}
 
         <Field label="Email" type="email" value={form.email} onChange={v => set('email', v)} placeholder="" />
-        <Field label="Password" type="password" value={form.password} onChange={v => set('password', v)} placeholder="" />
+        {mode !== 'reset' && (
+          <Field label="Password" type="password" value={form.password} onChange={v => set('password', v)} placeholder="" />
+        )}
+        {mode === 'in' && (
+          <div style={{ textAlign: 'right', marginTop: '-8px', marginBottom: '10px' }}>
+            <button onClick={() => { setMode('reset'); setError(''); setResetSent(false); }} style={{ background: 'none', border: 'none', color: 'var(--periwinkle)', fontSize: '.78rem', cursor: 'pointer', padding: 0 }}>
+              Forgot password?
+            </button>
+          </div>
+        )}
 
         {mode === 'up' && (
           <>
@@ -92,14 +129,23 @@ export default function AuthPage() {
           </>
         )}
 
-        {error && <div className={styles.err}>{error}</div>}
-        <button
-          className={styles.cta}
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? 'Loading...' : mode === 'in' ? 'Sign In' : 'Create Account'}
-        </button>
+        {resetSent ? (
+          <div style={{ textAlign: 'center', padding: '14px 0', fontSize: '.9rem', color: 'var(--ink)' }}>
+            Check your inbox! A reset link is on its way.
+            <div style={{ fontSize: '.78rem', color: 'var(--muted)', marginTop: '6px' }}>Don't see it? Check your spam folder.</div>
+          </div>
+        ) : (
+          <>
+            {error && <div className={styles.err}>{error}</div>}
+            <button
+              className={styles.cta}
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Loading...' : mode === 'in' ? 'Sign In' : mode === 'up' ? 'Create Account' : 'Send Reset Link'}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

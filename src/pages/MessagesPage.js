@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   collection, query, where, orderBy, onSnapshot,
-  addDoc, updateDoc, setDoc, doc, serverTimestamp,
+  addDoc, updateDoc, setDoc, doc, serverTimestamp, getDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
@@ -64,6 +64,12 @@ export default function MessagesPage({ initialUid, initialUidData, searchQuery =
     return onSnapshot(q, snap => setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
   }, [activeId]);
 
+  // Mark conversation as read when opened
+  useEffect(() => {
+    if (!activeId || !uid) return;
+    updateDoc(doc(db, 'dms', activeId), { [`lastRead.${uid}`]: serverTimestamp() }).catch(() => {});
+  }, [activeId, uid]);
+
   useEffect(() => {
     msgEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -113,8 +119,12 @@ export default function MessagesPage({ initialUid, initialUidData, searchQuery =
         {filteredConvs.length === 0
           ? <p className={styles.sideEmpty}>{searchQuery ? 'No results.' : 'No messages yet.\nDM someone from their profile.'}</p>
           : filteredConvs.map(conv => {
-              const oUid  = conv.participants?.find(p => p !== uid);
-              const oData = conv.participantData?.[oUid] || {};
+              const oUid    = conv.participants?.find(p => p !== uid);
+              const oData   = conv.participantData?.[oUid] || {};
+              const myRead  = conv.lastRead?.[uid];
+              const isUnread = conv.lastSenderUid !== uid &&
+                !!conv.lastMessageAt &&
+                (!myRead || conv.lastMessageAt.seconds > myRead.seconds);
               return (
                 <button
                   key={conv.id}
@@ -123,12 +133,17 @@ export default function MessagesPage({ initialUid, initialUidData, searchQuery =
                 >
                   <div className={styles.convAvatar}>{oData.initials || '?'}</div>
                   <div className={styles.convMeta}>
-                    <div className={styles.convName}>{oData.name || 'Sister'}</div>
+                    <div className={`${styles.convName} ${isUnread ? styles.convNameUnread : ''}`}>
+                      {oData.name || 'Sister'}
+                    </div>
                     <div className={styles.convLast}>{conv.lastMessage || 'Start the conversation'}</div>
                   </div>
-                  {conv.lastMessageAt && (
-                    <div className={styles.convTime}>{formatTime(conv.lastMessageAt)}</div>
-                  )}
+                  <div className={styles.convRight}>
+                    {conv.lastMessageAt && (
+                      <div className={styles.convTime}>{formatTime(conv.lastMessageAt)}</div>
+                    )}
+                    {isUnread && <div className={styles.unreadDot} />}
+                  </div>
                 </button>
               );
             })

@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
+import ListingDetail from '../components/ListingDetail';
 import styles from './UserProfilePage.module.css';
 
 const CATEGORY_EMOJI = { formal: '👗', formals: '👗', raids: '⚡', furniture: '🛋️', subleasing: '🏠', sublease: '🏠', accessories: '💎', recruitment: '🌸', festival: '🎪', party: '🎉', tickets: '🎟️', other: '✨' };
 const CATEGORY_BG    = { formal: '#D6ECFF', formals: '#D6ECFF', raids: '#E0F2FF', furniture: '#D8EEF8', subleasing: '#EAF4FF', sublease: '#EAF4FF', accessories: '#E4F3FF', recruitment: '#FFE8F0', festival: '#FFF0D6', party: '#F0E8FF', tickets: '#E8FFE8', other: '#DDF0FF' };
 
-export default function UserProfilePage({ uid, onBack, onDm, onViewListing }) {
+export default function UserProfilePage({ uid, onBack, onDm }) {
   const { currentUser } = useAuth();
-  const [profile, setProfile]   = useState(null);
-  const [listings, setListings] = useState([]);
-  const [tab, setTab]           = useState('active');
-  const [loading, setLoading]   = useState(true);
+  const [profile, setProfile]     = useState(null);
+  const [listings, setListings]   = useState([]);
+  const [tab, setTab]             = useState('active');
+  const [loading, setLoading]     = useState(true);
+  const [selected, setSelected]   = useState(null);
 
   useEffect(() => {
     if (!uid) return;
@@ -47,11 +49,28 @@ export default function UserProfilePage({ uid, onBack, onDm, onViewListing }) {
       </div>
 
       {loading ? (
-        <div className={styles.loading}>Loading…</div>
+        <div className={styles.skeleton}>
+          <div className={styles.skelHeader}>
+            <div className={`${styles.skelCircle} ${styles.shimmer}`} />
+            <div className={styles.skelLines}>
+              <div className={`${styles.skelLine} ${styles.skelLineLg} ${styles.shimmer}`} />
+              <div className={`${styles.skelLine} ${styles.skelLineSm} ${styles.shimmer}`} />
+              <div className={`${styles.skelLine} ${styles.skelLineMd} ${styles.shimmer}`} />
+            </div>
+          </div>
+          <div className={styles.skelGrid}>
+            {[1,2,3,4].map(i => <div key={i} className={`${styles.skelCard} ${styles.shimmer}`} />)}
+          </div>
+        </div>
       ) : (
         <>
           <div className={styles.header}>
-            <div className={styles.avatar}>{initials || '?'}</div>
+            <div className={styles.avatar}>
+              {profile?.photoUrl
+                ? <img src={profile.photoUrl} alt={name} className={styles.avatarPhoto} />
+                : <span>{initials || '?'}</span>
+              }
+            </div>
             <div className={styles.info}>
               <h2 className={styles.name}>{name || 'Kappa Sister'}</h2>
               <div className={styles.meta}>
@@ -84,11 +103,15 @@ export default function UserProfilePage({ uid, onBack, onDm, onViewListing }) {
           ) : (
             <div className={styles.grid}>
               {shown.map(l => (
-                <ProfileCard key={l.id} listing={l} onClick={() => onViewListing?.(l)} />
+                <ProfileCard key={l.id} listing={l} onClick={() => setSelected(l)} />
               ))}
             </div>
           )}
         </>
+      )}
+
+      {selected && (
+        <ListingDetail listing={selected} onClose={() => setSelected(null)} onViewProfile={() => {}} />
       )}
     </div>
   );

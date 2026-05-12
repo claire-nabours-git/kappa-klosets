@@ -48,14 +48,22 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   margin-bottom: 2px;
 }
+.convNameUnread { font-weight: 700; }
 .convLast {
   font-size: .75rem; color: var(--faint); font-weight: 300;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.convRight {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 5px; flex-shrink: 0;
+}
 .convTime {
   font-size: .62rem; color: var(--faint);
-  flex-shrink: 0; font-family: 'Geom', sans-serif;
-  align-self: flex-start; padding-top: 2px;
+  font-family: 'Geom', sans-serif;
+}
+.unreadDot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #1d2545; flex-shrink: 0;
 }
 
 /* ── Chat panel ── */
@@ -177,6 +185,11 @@
 
 /* ── Mobile ── */
 @media(max-width:680px) {
-  .page { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
+  .page { grid-template-columns: 120px 1fr; }
+  .convName { font-size: .78rem; }
+  .convLast, .convTime, .unreadDot { display: none; }
+  .convAvatar { width: 34px; height: 34px; font-size: 11px; }
+  .convItem { padding: 10px 10px; justify-content: center; }
+  .convMeta { min-width: 0; }
+  .sideHeadTitle { font-size: .95rem; }
 }
