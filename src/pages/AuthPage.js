@@ -55,7 +55,7 @@ export default function AuthPage() {
       <div className={styles.blob2} />
       <div className={styles.box}>
         <div className={styles.wordmark}>KAPPA KLOSETS</div>
-        <div className={styles.tagline}>UCLA KKG's collective closet</div>
+        <div className={styles.tagline}>ready to buy, sell, and swap?</div>
 
         <div className={styles.toggle}>
           <button className={mode === 'in' ? styles.on : ''} onClick={() => setMode('in')}>Sign In</button>
