@@ -12,8 +12,9 @@
   font-size: 1.3rem; font-weight: 400; color: var(--ink);
   margin-bottom: 1rem;
 }
-.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-bottom: 0; }
+.tabs { display: flex; gap: 0; overflow-x: auto; overflow-y: visible; scrollbar-width: none; padding-bottom: 0; touch-action: pan-x; -webkit-overflow-scrolling: touch; }
 .tabs::-webkit-scrollbar { display: none; }
+.tab { touch-action: manipulation; }
 .tab {
   padding: 10px 18px; border: none; background: none; cursor: pointer;
   font-family: 'Geom', sans-serif; font-size: .78rem; font-weight: 400;
@@ -140,7 +141,14 @@
 .statusComplete { background: #E0F0E8; color: #2A7A50; font-weight: 700; }
 
 @media(max-width:640px) {
-  .topBar { padding: 0 1rem; top: 56px; }
+  .topBar { padding: 0; top: 56px; }
   .content { padding: 1.2rem 1rem 5rem; }
-  .pageTitle { font-size: 1.1rem; }
+  .pageTitle { font-size: 1.1rem; margin-left: 1rem; }
+  .tabs { overflow-x: visible; touch-action: manipulation; }
+  .tab { flex: 1; padding: 10px 2px; font-size: .62rem; letter-spacing: .02em; white-space: normal; text-align: center; line-height: 1.2; }
+  .tabBadge { margin-left: 2px; font-size: .5rem; min-width: 14px; height: 14px; }
+  .offerCard { flex-wrap: wrap; }
+  .offerInfo { min-width: 0; width: 100%; }
+  .itemActions { flex-wrap: wrap; }
+  .offerBottom { flex-wrap: wrap; }
 }

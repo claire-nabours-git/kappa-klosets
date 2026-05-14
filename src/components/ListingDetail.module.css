@@ -25,6 +25,8 @@
   transition: border-color .15s;
 }
 .close:hover { border-color: var(--periwinkle); }
+.closeMobile { display: none; }
+.closeDesktop { display: flex; }
 
 /* ── Top 2-col layout ── */
 .top { display: grid; grid-template-columns: 52% 48%; min-height: 480px; }
@@ -231,11 +233,45 @@
 
 /* Mobile */
 @media(max-width:680px) {
-  .overlay { padding: 0; align-items: flex-end; }
-  .modal { max-height: 96vh; border-radius: 20px 20px 0 0; }
+  .overlay { padding: 0; align-items: flex-start; overflow-y: auto; }
+  .modal {
+    min-height: 100vh; min-height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    overflow-y: visible;
+    animation: none;
+  }
+
+  /* Back button — fixed top-left, larger tap target */
+  .close {
+    position: fixed; top: 12px; left: 12px; right: auto;
+    width: 44px; height: 44px;
+    background: rgba(29,37,69,0.85);
+    border-color: transparent;
+    color: #fff; font-size: 22px;
+    z-index: 400;
+  }
+  .closeMobile { display: flex; }
+  .closeDesktop { display: none; }
+
   .top { grid-template-columns: 1fr; min-height: unset; }
-  .photoPanel { aspect-ratio: 4/3; border-radius: 20px 20px 0 0; }
-  .details { padding: 1.4rem; }
-  .msgSection { padding: 1rem 1.4rem 1.4rem; }
+
+  /* Image takes up top portion, no border radius at top */
+  .photoPanel {
+    aspect-ratio: 1/1;
+    border-radius: 0;
+    min-height: 300px;
+  }
+
+  /* Details fully visible, no inner scroll */
+  .details {
+    padding: 1.4rem;
+    overflow-y: visible;
+  }
+
+  .msgSection { padding: 1rem 1.4rem 6rem; }
   .detailPrice { font-size: 1.7rem; }
+  .detailCategory { font-size: .78rem; letter-spacing: .08em; }
+  .photoThumbs { bottom: 10px; }
+  .msgList { max-height: 300px; }
 }

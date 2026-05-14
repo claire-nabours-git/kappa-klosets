@@ -103,7 +103,10 @@ export default function PostModal({ onClose }) {
   return (
     <div className={styles.overlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div className={styles.modal}>
-        <button className={styles.x} onClick={onClose}>✕</button>
+        <button className={styles.x} onClick={onClose}>
+          <span className={styles.xDesktop}>✕</span>
+          <span className={styles.xMobile}>‹</span>
+        </button>
         <div className={styles.title}>New Listing</div>
         <div className={styles.sub}>drop your item for the chapter</div>
 

@@ -22,7 +22,11 @@ service cloud.firestore {
     match /listings/{listingId} {
       allow read: if true;
       allow create: if isAuth();
-      allow update, delete: if isAuth() && request.auth.uid == resource.data.sellerUid;
+      allow update: if isAuth() && (
+        request.auth.uid == resource.data.sellerUid ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
+      );
+      allow delete: if isAuth() && request.auth.uid == resource.data.sellerUid;
 
       // Q&A comments — anyone can read, only signed-in users can write
       match /messages/{msgId} {

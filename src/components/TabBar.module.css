@@ -13,16 +13,48 @@
 }
 
 @media(max-width:640px) {
-  .bar { padding: 0; top: 56px; overflow-x: auto; scrollbar-width: none; }
-  .bar::-webkit-scrollbar { display: none; }
-  .inner {
-    height: auto; padding: 8px 12px;
-    gap: 6px; justify-content: flex-start;
-    width: max-content; min-width: 100%;
+  .bar {
+    padding: 0 8px; top: 56px;
+    background: rgba(250,252,255,1);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    overflow: visible;
   }
-  .sorts { gap: 5px; }
-  .rightBtns { gap: 5px; margin-left: auto; }
-  .sortBtn { padding: 5px 11px; font-size: .7rem; letter-spacing: .03em; white-space: nowrap; }
+  .inner {
+    height: auto;
+    padding: 6px 0 4px;
+    flex-direction: column;
+    gap: 5px;
+    align-items: stretch;
+  }
+  .sorts {
+    display: flex; gap: 4px; width: 100%;
+  }
+  .sorts .sortBtn { flex: 1; }
+  .rightBtns {
+    display: flex; gap: 4px; width: 100%;
+  }
+  .rightBtns .ddWrap { flex: 1; }
+  .rightBtns .sortBtn { width: 100%; }
+  .sortBtn {
+    padding: 7px 4px;
+    font-size: .68rem;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-align: center;
+    touch-action: manipulation;
+    justify-content: center;
+  }
+  .chevronBtn { display: none; }
+  .dropdown {
+    position: fixed;
+    top: 136px;
+    left: 8px; right: 8px;
+    min-width: unset;
+    max-height: 65vh; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 500;
+  }
 }
 .sorts { display: flex; gap: 6px; align-items: center; }
 .rightBtns { display: flex; gap: 6px; align-items: center; }

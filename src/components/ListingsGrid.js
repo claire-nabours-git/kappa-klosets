@@ -115,7 +115,7 @@ function ListingCard({ listing: l, delay, onOpen, onViewProfile, isGuest, requir
           className={`${styles.heart} ${hearted ? styles.heartOn : ''}`}
           onClick={e => { e.stopPropagation(); isGuest ? requireAuth('like listings') : toggleLike(l.id); }}
         >
-          {hearted ? '♥ Liked' : '♡ Like'}
+          {hearted ? '♥︎' : '♡︎'}{Math.max(0, l.likeCount || 0) > 0 ? ` ${Math.max(0, l.likeCount || 0)}` : ''}
         </button>
       </div>
       <div className={styles.body}>

@@ -142,3 +142,29 @@
 .photoAdd:hover { border-color: var(--periwinkle); }
 .photoAddPlus { font-size: 1.4rem; color: var(--faint); line-height: 1; }
 .photoAddLbl { font-size: .6rem; color: var(--faint); letter-spacing: .08em; text-transform: uppercase; }
+
+.xDesktop { display: flex; }
+.xMobile  { display: none; }
+
+@media(max-width:640px) {
+  .overlay { padding: 0; align-items: flex-start; overflow-y: auto; }
+  .modal {
+    min-height: 100vh; min-height: 100dvh;
+    max-height: none; border-radius: 0;
+    padding: 5rem 1.4rem 2rem;
+    overflow-y: visible; animation: none;
+  }
+  /* Back button fixed top-left */
+  .x {
+    position: fixed; top: 12px; left: 12px; right: auto;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(29,37,69,0.85); border: none;
+    color: #fff; font-size: 22px; z-index: 400;
+  }
+  .xDesktop { display: none; }
+  .xMobile  { display: flex; }
+  /* Single-column rows on mobile */
+  .row { grid-template-columns: 1fr; gap: 0; }
+  .title { font-size: 1.2rem; }
+  .sub   { margin-bottom: 1.2rem; }
+}

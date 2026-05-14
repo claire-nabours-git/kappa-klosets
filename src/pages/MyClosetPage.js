@@ -11,11 +11,11 @@ import { sendDm } from '../utils/sendDm';
 import styles from './MyClosetPage.module.css';
 
 const SUBTABS = [
-  { id: 'listings',  label: 'My Listings' },
+  { id: 'listings',  label: 'Listings' },
   { id: 'liked',     label: 'Liked' },
   { id: 'offers',    label: 'Offers' },
   { id: 'sold',      label: 'Sold' },
-  { id: 'purchased', label: 'Purchased' },
+  { id: 'purchased', label: 'Bought' },
 ];
 
 const CATEGORY_EMOJI = { formal: '👗', formals: '👗', raids: '⚡', furniture: '🛋️', subleasing: '🏠', sublease: '🏠', accessories: '💎', recruitment: '🌸', festival: '🎪', party: '🎉', tickets: '🎟️', other: '✨' };
@@ -28,8 +28,9 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
   const [likedItems, setLikedItems] = useState([]);
   const [offersIn, setOffersIn]     = useState([]);
   const [offersOut, setOffersOut]   = useState([]);
-  const [paymentOffer, setPaymentOffer] = useState(null);
-  const [meetupOffer, setMeetupOffer]   = useState(null);
+  const [paymentOffer, setPaymentOffer]   = useState(null);
+  const [meetupOffer, setMeetupOffer]     = useState(null);
+  const [listingsLoaded, setListingsLoaded] = useState(false);
 
   const uid = currentUser?.uid;
 
@@ -41,6 +42,7 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
       const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       items.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
       setMyListings(items);
+      setListingsLoaded(true);
     });
   }, [uid]);
 
@@ -157,7 +159,7 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
 
   const myListingIds       = new Set(myListings.map(l => l.id));
   const sold               = myListings.filter(l => l.status === 'sold');
-  const activeOffersIn     = offersIn.filter(o => ACTIVE_OFFER_STATUSES.includes(o.status) && myListingIds.has(o.listingId));
+  const activeOffersIn     = offersIn.filter(o => ACTIVE_OFFER_STATUSES.includes(o.status) && (!listingsLoaded || myListingIds.has(o.listingId)));
   const activeOffersOut    = offersOut.filter(o => ['pending', 'declined'].includes(o.status));
   const purchased          = offersOut.filter(o => PURCHASED_OFFER_STATUSES.includes(o.status));
   const offersActionCount  = offersIn.filter(o => o.status === 'pending' || o.status === 'payment_sent').length;

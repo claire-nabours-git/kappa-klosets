@@ -40,7 +40,7 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
   const [msgText, setMsgText]           = useState('');
   const [msgSending, setMsgSending]     = useState(false);
   const [offerMode, setOfferMode]       = useState(false);
-  const [offerAmt, setOfferAmt]         = useState(initial.price || '');
+  const [offerAmt, setOfferAmt]         = useState(initial.price ?? '');
   const [offerMsg, setOfferMsg]         = useState('');
   const [offerSent, setOfferSent]       = useState(false);
   const [offerSending, setOfferSending] = useState(false);
@@ -93,7 +93,7 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
   }
 
   async function sendOffer(amount, message) {
-    if (!currentUser || !amount) return;
+    if (!currentUser || amount === '' || amount === null || amount === undefined) return;
     setOfferSending(true);
     const buyerName = `${userProfile?.first || ''} ${userProfile?.last?.[0] || ''}.`.trim();
     await addDoc(collection(db, 'offers'), {
@@ -134,7 +134,10 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
   return (
     <div className={styles.overlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div className={styles.modal}>
-        <button className={styles.close} onClick={onClose}>✕</button>
+        <button className={styles.close} onClick={onClose}>
+          <span className={styles.closeDesktop}>✕</span>
+          <span className={styles.closeMobile}>‹</span>
+        </button>
 
         <div className={styles.top}>
           {/* ── Photo carousel ── */}
@@ -174,8 +177,8 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
                 className={`${styles.likeBtn} ${hearted ? styles.likeBtnOn : ''}`}
                 onClick={() => isGuest ? requireAuth('like listings') : toggleLike(listing.id)}
               >
-                <span className={styles.likeWord}>{hearted ? '♥ Liked' : '♡ Like'}</span>
-                <span className={styles.likeCount}>{listing.likeCount || 0}</span>
+                <span className={styles.likeWord}>{hearted ? '♥︎ Liked' : '♡︎ Like'}</span>
+                <span className={styles.likeCount}>{Math.max(0, listing.likeCount || 0)}</span>
               </button>
             </div>
 
@@ -240,7 +243,7 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
                   <div className={styles.offerRow}>
                     <button className={styles.ctaGhost} onClick={() => setOfferMode(false)}>Cancel</button>
                     <button className={styles.ctaSolid} onClick={() => sendOffer(offerAmt, offerMsg)}
-                      disabled={offerSending || !offerAmt}>
+                      disabled={offerSending || offerAmt === '' || offerAmt === null || offerAmt === undefined}>
                       {offerSending ? 'Sending…' : 'Send Offer'}
                     </button>
                   </div>
