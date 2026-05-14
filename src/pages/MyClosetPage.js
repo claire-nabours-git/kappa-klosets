@@ -139,7 +139,7 @@ export default function MyClosetPage({ onViewProfile, onDm }) {
         fromName: sellerName,
         toUid: offer.buyerUid,
         toName: offer.buyerName || 'Sister',
-        text: `✅ Offer accepted! "${ offer.listingTitle}" for $${offer.amount} is yours. Arrange payment with ${sellerName}.`,
+        text: `✅ Offer accepted! "${offer.listingTitle}" for $${offer.amount} is yours. Arrange payment with ${sellerName}.`,
       });
     }
   }

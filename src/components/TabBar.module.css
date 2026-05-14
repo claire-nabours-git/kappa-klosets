@@ -1,14 +1,28 @@
 .bar {
   border-bottom: 1px solid var(--border);
   background: rgba(250,252,255,0.95);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  position: sticky; top: 76px; z-index: 40;
+  position: -webkit-sticky; position: sticky; top: 76px; z-index: 40;
   padding: 0 2.5rem;
 }
 .inner {
   max-width: 1400px; margin: 0 auto;
   height: 54px;
   display: flex; align-items: center; justify-content: space-between;
+}
+
+@media(max-width:640px) {
+  .bar { padding: 0; top: 56px; overflow-x: auto; scrollbar-width: none; }
+  .bar::-webkit-scrollbar { display: none; }
+  .inner {
+    height: auto; padding: 8px 12px;
+    gap: 6px; justify-content: flex-start;
+    width: max-content; min-width: 100%;
+  }
+  .sorts { gap: 5px; }
+  .rightBtns { gap: 5px; margin-left: auto; }
+  .sortBtn { padding: 5px 11px; font-size: .7rem; letter-spacing: .03em; white-space: nowrap; }
 }
 .sorts { display: flex; gap: 6px; align-items: center; }
 .rightBtns { display: flex; gap: 6px; align-items: center; }

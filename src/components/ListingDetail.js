@@ -32,7 +32,7 @@ function formatRelative(ts) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-export default function ListingDetail({ listing: initial, onClose, onViewProfile }) {
+export default function ListingDetail({ listing: initial, onClose, onViewProfile, isGuest, requireAuth }) {
   const { currentUser, userProfile, toggleLike } = useAuth();
   const [listing, setListing]           = useState(initial);
   const [photoIdx, setPhotoIdx]         = useState(0);
@@ -172,7 +172,7 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
               </div>
               <button
                 className={`${styles.likeBtn} ${hearted ? styles.likeBtnOn : ''}`}
-                onClick={() => toggleLike(listing.id)}
+                onClick={() => isGuest ? requireAuth('like listings') : toggleLike(listing.id)}
               >
                 <span className={styles.likeWord}>{hearted ? '♥ Liked' : '♡ Like'}</span>
                 <span className={styles.likeCount}>{listing.likeCount || 0}</span>
@@ -212,7 +212,13 @@ export default function ListingDetail({ listing: initial, onClose, onViewProfile
             </div>
 
             {/* Actions */}
-            {!isOwn && listing.status !== 'sold' && (
+            {isGuest && listing.status !== 'sold' && (
+              <div className={styles.actionBtns}>
+                <button className={styles.ctaSolid} onClick={() => requireAuth('buy or make offers')}>Buy Now — {price}</button>
+                <button className={styles.ctaGhost} onClick={() => requireAuth('make an offer')}>Make Offer</button>
+              </div>
+            )}
+            {!isGuest && !isOwn && listing.status !== 'sold' && (
               offerSent ? (
                 <div className={styles.offerSentMsg}>✓ Offer sent!</div>
               ) : offerMode ? (

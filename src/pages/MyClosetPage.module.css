@@ -3,7 +3,7 @@
 .topBar {
   border-bottom: 1px solid var(--border);
   background: rgba(250,252,255,0.97);
-  position: sticky; top: 64px; z-index: 40;
+  position: -webkit-sticky; position: sticky; top: 64px; z-index: 40;
   padding: 0 2.5rem;
 }
 .topInner { max-width: 1400px; margin: 0 auto; padding: 1.2rem 0 0; }
@@ -140,6 +140,7 @@
 .statusComplete { background: #E0F0E8; color: #2A7A50; font-weight: 700; }
 
 @media(max-width:640px) {
-  .topBar { padding: 0 1.5rem; }
-  .content { padding: 1.5rem 1.5rem 4rem; }
+  .topBar { padding: 0 1rem; top: 56px; }
+  .content { padding: 1.2rem 1rem 5rem; }
+  .pageTitle { font-size: 1.1rem; }
 }

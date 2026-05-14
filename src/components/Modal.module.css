@@ -1,7 +1,8 @@
 .overlay {
   position: fixed; inset: 0;
   background: rgba(200,220,240,0.35);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px); 
   z-index: 200; display: flex;
   align-items: center; justify-content: center; padding: 1rem;
 }

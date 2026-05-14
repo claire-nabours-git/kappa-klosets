@@ -98,15 +98,11 @@ export default function UserProfilePage({ uid, onBack, onDm }) {
             </button>
           </div>
 
-          {shown.length === 0 ? (
-            <p className={styles.empty}>{tab === 'active' ? 'No active listings.' : 'No sold items yet.'}</p>
-          ) : (
-            <div className={styles.grid}>
-              {shown.map(l => (
-                <ProfileCard key={l.id} listing={l} onClick={() => setSelected(l)} />
-              ))}
-            </div>
-          )}
+          <div className={styles.grid}>
+            {shown.map(l => (
+              <ProfileCard key={l.id} listing={l} onClick={() => setSelected(l)} />
+            ))}
+          </div>
         </>
       )}
 

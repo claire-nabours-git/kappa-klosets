@@ -201,7 +201,12 @@ export default function MessagesPage({ initialUid, initialUidData, searchQuery =
                 placeholder="Send a message…"
               />
               <button className={styles.sendBtn} onClick={sendMessage} disabled={!msgText.trim() || sending}>
-                Send
+                <span className={styles.sendLabel}>Send</span>
+                <span className={styles.sendArrow}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                  </svg>
+                </span>
               </button>
             </div>
           </>

@@ -1,0 +1,58 @@
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(10,20,40,0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  z-index: 500; display: flex;
+  align-items: center; justify-content: center; padding: 1rem;
+}
+.modal {
+  background: var(--white);
+  border: 1px solid var(--border-md);
+  border-radius: 24px; width: 100%; max-width: 340px;
+  padding: 2rem; position: relative; text-align: center;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+  animation: popIn .25s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes popIn { from{opacity:0;transform:scale(.95) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.x {
+  position: absolute; top: 14px; right: 14px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--mist); border: 1px solid var(--border);
+  color: var(--muted); cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+.heart {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #1d2545;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.2rem;
+}
+.title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.3rem; font-weight: 400; color: var(--ink); margin-bottom: 6px;
+}
+.sub { font-size: .82rem; color: var(--muted); font-weight: 300; margin-bottom: 1.6rem; line-height: 1.5; }
+.primary {
+  width: 100%; background: #1d2545; color: #fff; border: none;
+  padding: 13px; border-radius: 12px; margin-bottom: 8px;
+  font-family: 'Geom', sans-serif; font-size: .78rem; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+  transition: background .15s;
+}
+.primary:hover { background: #2d3a6a; }
+.secondary {
+  width: 100%; background: none; color: #1d2545;
+  border: 1.5px solid #1d2545; padding: 12px; border-radius: 12px;
+  margin-bottom: 10px;
+  font-family: 'Geom', sans-serif; font-size: .78rem; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+  transition: all .15s;
+}
+.secondary:hover { background: var(--mist); }
+.cancel {
+  background: none; border: none; color: var(--faint);
+  font-family: 'Geom', sans-serif; font-size: .75rem;
+  cursor: pointer; padding: 4px; transition: color .15s;
+}
+.cancel:hover { color: var(--muted); }

@@ -37,16 +37,12 @@
   align-items: center; justify-content: center;
   gap: 8px; position: relative; overflow: hidden;
 }
-.img::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, transparent 60%, rgba(250,252,255,0.5));
-}
 
 .tag {
   position: absolute; top: 12px; left: 12px;
   background: rgba(250,252,255,0.88);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px); 
   border: 1px solid var(--border-md);
   border-radius: 20px;
   font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
@@ -55,7 +51,8 @@
 .heart {
   position: absolute; top: 10px; right: 10px;
   background: rgba(250,252,255,0.92);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px); 
   border: 1px solid var(--border);
   border-radius: 20px; padding: 3px 10px;
   font-family: 'Geom', sans-serif; font-size: .62rem; font-weight: 500;
@@ -118,7 +115,8 @@
 .offerOverlay {
   position: fixed; inset: 0;
   background: rgba(200,220,240,0.4);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px); 
   z-index: 300; display: flex;
   align-items: center; justify-content: center; padding: 1rem;
 }

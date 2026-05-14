@@ -17,16 +17,16 @@ service cloud.firestore {
       allow write: if isOwner(uid);
     }
 
-    // Listings: any signed-in user can read; authenticated users can create;
+    // Listings: anyone can read; authenticated users can create;
     // only the seller can update or delete their own listing
     match /listings/{listingId} {
-      allow read: if isAuth();
+      allow read: if true;
       allow create: if isAuth();
       allow update, delete: if isAuth() && request.auth.uid == resource.data.sellerUid;
 
-      // Public Q&A comments on a listing — any signed-in user can read/write
+      // Q&A comments — anyone can read, only signed-in users can write
       match /messages/{msgId} {
-        allow read: if isAuth();
+        allow read: if true;
         allow create: if isAuth();
         allow delete: if isAuth() && request.auth.uid == resource.data.uid;
       }

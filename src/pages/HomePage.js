@@ -16,7 +16,7 @@ import styles from './HomePage.module.css';
 
 const EMPTY_FILTERS = { categories: [], sizes: [], colors: [], freeOnly: false };
 
-export default function HomePage() {
+export default function HomePage({ isGuest = false, requireAuth }) {
   const { currentUser } = useAuth();
   const [page, setPage]             = useState('home');
   const [prevPage, setPrevPage]     = useState('home');
@@ -97,8 +97,9 @@ export default function HomePage() {
   return (
     <div className={styles.page}>
       <Header
-        onPost={() => setPostOpen(true)}
-        onProfile={() => setProfileOpen(true)}
+        onPost={() => isGuest ? requireAuth('post a listing') : setPostOpen(true)}
+        onProfile={() => isGuest ? requireAuth('edit your profile') : setProfileOpen(true)}
+        isGuest={isGuest}
         onSearch={setSearchQuery}
         page={page}
       />
@@ -111,7 +112,7 @@ export default function HomePage() {
             filters={filters} onFilters={setFilters}
             selectedCat={selectedCat} onCatSelect={handleCatSelect}
           />
-          <ListingsGrid sort={sort} filters={filters} searchQuery={searchQuery} onViewProfile={viewProfile} />
+          <ListingsGrid sort={sort} filters={filters} searchQuery={searchQuery} onViewProfile={viewProfile} isGuest={isGuest} requireAuth={requireAuth} />
         </>
       )}
 
@@ -121,9 +122,9 @@ export default function HomePage() {
         <UserProfilePage uid={profileUid} onBack={goBack} onDm={startDm} />
       )}
 
-      {page !== 'profile' && <NavBar page={page} onPage={handleNavPage} unreadCount={unreadCount} closetActionCount={closetActionCount} />}
+      {page !== 'profile' && <NavBar page={page} onPage={p => { if (isGuest && (p === 'closet' || p === 'messages')) { requireAuth('access your closet and messages'); } else { handleNavPage(p); } }} unreadCount={unreadCount} closetActionCount={closetActionCount} />}
 
-      {postOpen    && <PostModal    onClose={() => setPostOpen(false)} />}
+      {postOpen    && !isGuest && <PostModal    onClose={() => setPostOpen(false)} />}
       {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
 
       {page !== 'profile' && (

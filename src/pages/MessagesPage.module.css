@@ -1,9 +1,15 @@
 .page {
   display: grid;
   grid-template-columns: 300px 1fr;
-  height: calc(100vh - 64px - 64px);
-  max-width: 1400px;
-  margin: 0 auto;
+  height: calc(100vh - 76px - 64px - env(safe-area-inset-bottom));
+  height: calc(100dvh - 76px - 64px - env(safe-area-inset-bottom));
+  width: 100%;
+}
+@media(max-width:640px) {
+  .page {
+    height: calc(100vh - 56px - 60px - env(safe-area-inset-bottom));
+    height: calc(100dvh - 56px - 60px - env(safe-area-inset-bottom));
+  }
 }
 
 /* ── Sidebar ── */
@@ -22,7 +28,7 @@
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 1.2rem; font-weight: 400; color: var(--ink);
 }
-.convList { flex: 1; overflow-y: auto; }
+.convList { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .sideEmpty {
   font-size: .82rem; color: var(--faint); font-weight: 300;
   padding: 2rem 1.6rem; line-height: 1.8; text-align: center;
@@ -107,7 +113,7 @@
 
 /* ── Messages ── */
 .msgList {
-  flex: 1; overflow-y: auto;
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
   padding: 1.6rem 1.6rem 1rem;
   display: flex; flex-direction: column; gap: 4px;
 }
@@ -182,6 +188,15 @@
 .sendBtn:hover:not(:disabled) { background: #2d3a6a; transform: translateY(-1px); }
 .sendBtn:active:not(:disabled) { transform: translateY(0); }
 .sendBtn:disabled { opacity: .4; cursor: not-allowed; }
+.sendArrow { display: none; }
+
+@media(max-width:640px) {
+  .sendLabel { display: none; }
+  .sendArrow { display: flex; align-items: center; justify-content: center; }
+  .sendBtn { padding: 0; width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .inputRow { padding: 10px 12px; gap: 8px; }
+  .input { padding: 10px 14px; font-size: .85rem; }
+}
 
 /* ── Mobile ── */
 @media(max-width:680px) {

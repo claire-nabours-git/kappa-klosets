@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import styles from './AuthPage.module.css';
 
-export default function AuthPage() {
+export default function AuthPage({ onGuest }) {
   const { login, register, resetPassword } = useAuth();
   const [mode, setMode] = useState('in'); // 'in' | 'up' | 'reset'
   const [error, setError] = useState('');
@@ -127,6 +127,15 @@ export default function AuthPage() {
             </div>
             <Field label="PC" value={form.pc} onChange={v => set('pc', v)} placeholder="e.g. 22" />
           </>
+        )}
+
+        {onGuest && mode !== 'reset' && (
+          <button
+            onClick={onGuest}
+            style={{ width:'100%', background:'none', border:'none', color:'var(--muted)', fontFamily:"'Geom',sans-serif", fontSize:'.78rem', cursor:'pointer', padding:'4px 0 10px', letterSpacing:'.04em' }}
+          >
+            Browse as guest
+          </button>
         )}
 
         {resetSent ? (

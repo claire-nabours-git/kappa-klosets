@@ -1,4 +1,4 @@
-.page { max-width: 1400px; margin: 0 auto; }
+.page { width: 100%; max-width: 1400px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; }
 
 .topBar {
   padding: 1rem 2.5rem;
@@ -83,6 +83,7 @@
 .grid {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 20px; padding: 2rem 2.5rem;
+  align-content: start;
 }
 .card {
   border: 1px solid var(--border); border-radius: 16px; overflow: hidden;

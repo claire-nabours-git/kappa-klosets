@@ -55,7 +55,7 @@ function applyFilters(listings, filters, sort, searchQuery) {
   return out;
 }
 
-export default function ListingsGrid({ sort, filters, searchQuery, onViewProfile }) {
+export default function ListingsGrid({ sort, filters, searchQuery, onViewProfile, isGuest, requireAuth }) {
   const [live, setLive]         = useState([]);
   const [selected, setSelected] = useState(null);
 
@@ -81,18 +81,18 @@ export default function ListingsGrid({ sort, filters, searchQuery, onViewProfile
         ) : (
           <div className={styles.grid}>
             {filtered.map((l, i) => (
-              <ListingCard key={l.id} listing={l} delay={i * 0.03} onOpen={setSelected} onViewProfile={onViewProfile} />
+              <ListingCard key={l.id} listing={l} delay={i * 0.03} onOpen={setSelected} onViewProfile={onViewProfile} isGuest={isGuest} requireAuth={requireAuth} />
             ))}
           </div>
         )}
       </div>
 
-      {selected && <ListingDetail listing={selected} onClose={() => setSelected(null)} onViewProfile={onViewProfile} />}
+      {selected && <ListingDetail listing={selected} onClose={() => setSelected(null)} onViewProfile={onViewProfile} isGuest={isGuest} requireAuth={requireAuth} />}
     </>
   );
 }
 
-function ListingCard({ listing: l, delay, onOpen, onViewProfile }) {
+function ListingCard({ listing: l, delay, onOpen, onViewProfile, isGuest, requireAuth }) {
   const { userProfile, toggleLike } = useAuth();
   const hearted = (userProfile?.likedListings || []).includes(l.id);
   const cat     = (l.category || 'other').toLowerCase();
@@ -113,7 +113,7 @@ function ListingCard({ listing: l, delay, onOpen, onViewProfile }) {
         {l.status === 'sold' && <div className={styles.soldBadge}>SOLD</div>}
         <button
           className={`${styles.heart} ${hearted ? styles.heartOn : ''}`}
-          onClick={e => { e.stopPropagation(); toggleLike(l.id); }}
+          onClick={e => { e.stopPropagation(); isGuest ? requireAuth('like listings') : toggleLike(l.id); }}
         >
           {hearted ? '♥ Liked' : '♡ Like'}
         </button>
